@@ -22,7 +22,7 @@ function [] = processfolder(folder)
         if (isempty(dir([folder '/*.mat'])))
             processfolder(folder);
         else
-            idx = strfind(folder, '/');
+            idx = [strfind(folder, '\'), strfind(folder, '/')];
             folder_name = folder(idx(end-2)+1:idx(end-1)-1);
             fprintf('%s \n', folder_name);
             filename = [folder '/Errors.csv'];
@@ -30,9 +30,9 @@ function [] = processfolder(folder)
             fprintf('\n');
             for k = 1:length(actions)
                 gt_xyz_list = dir([folder '/gt_xyz_' actions{k} '_*.mat']);
-                gt_lie_list = dir([folder '/gt_lie_' actions{k} '_*.mat']);
+                gt_lie_list = dir([folder '/gt_lie_' actions{k} '*.mat']);
                 pred_xyz_list = dir([folder '/prediction_xyz_' actions{k} '_*.mat']);
-                pred_lie_list = dir([folder '/prediction_lie_' actions{k} '_*.mat']);
+                pred_lie_list = dir([folder '/prediction_lie_' actions{k} '*.mat']);
                 if isempty(gt_xyz_list)
                     continue
                 end

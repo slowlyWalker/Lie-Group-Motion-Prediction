@@ -11,6 +11,7 @@ import re
 import scipy.io as sio
 import general_utils as data_utils
 import timeit
+import random
 
 
 tf.app.flags.DEFINE_string("dataset", "Human", "Articulate object dataset: 'Human' or 'Fish' or 'Mouse'.")
@@ -23,7 +24,7 @@ h3.6m_action_list = ['directions', 'discussion', 'eating', 'greeting', 'phoning'
 mouse/fish_action = 'default'
 '''
 tf.app.flags.DEFINE_boolean("training", True, "Set to True for training.")
-tf.app.flags.DEFINE_boolean("visualize", True, "Set to True for visualization.")
+tf.app.flags.DEFINE_boolean("visualize", False, "Set to True for visualization.")
 tf.app.flags.DEFINE_boolean("longterm", False, "Set to True for super long-term prediction.")  #if longterm is true, action only can be: 'walking', 'eating' or 'smoking'
 
 FLAGS = tf.app.flags.FLAGS
@@ -49,8 +50,6 @@ def train():
     sess_config.allow_soft_placement = True
     sess_config.log_device_placement = False
     sess = tf.Session(config=sess_config)
-
-    tf.set_random_seed(112858)
 
     # Define cost function
     loss = eval('loss_functions.' + config.loss + '_loss(prediction, labels, config)')
@@ -196,7 +195,8 @@ def predict():
 
 
 def main(_):
-
+    random.seed(112858)
+    np.random.seed(112858)
     tf.set_random_seed(112858)
 
     global config, actions, checkpoint_dir, output_dir, train_set, test_set, x_test, y_test, dec_in_test
@@ -255,9 +255,6 @@ def main(_):
                 if config.dataset == 'Human':
                     y_p = data_utils.unNormalizeData(y_predict[action][i], config.data_mean, config.data_std, config.dim_to_ignore)
                     y_t = data_utils.unNormalizeData(y_test[action][i], config.data_mean, config.data_std, config.dim_to_ignore)
-                    expmap_all = data_utils.revert_coordinate_space(np.vstack((y_t, y_p)), np.eye(3), np.zeros(3))
-                    y_p = expmap_all[config.test_output_window:]
-                    y_t = expmap_all[:config.test_output_window]
                 else:
                     y_p = y_predict[action][i]
                     y_t = y_test[action][i]
@@ -266,7 +263,7 @@ def main(_):
                 sio.savemat(output_dir + 'gt_lie_' + action + '_' + str(i) + '.mat', dict([('gt', y_t)]))
 
                 # Forward Kinematics to obtain 3D xyz locations
-                # y_p[:,0:6] = y_t[:,0:6]
+                y_p[:,0:6] = y_t[:,0:6]
                 y_p_xyz = data_utils.fk(y_p, config)
                 y_t_xyz = data_utils.fk(y_t, config)
 

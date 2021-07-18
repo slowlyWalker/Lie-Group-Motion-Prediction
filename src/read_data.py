@@ -36,41 +36,6 @@ def read_human(config, training):
     else:
         actions = [config.filename]
 
-    # Bone lengths
-    bone = np.array([[0., 0., 0.],
-                     [132.95, 0., 0.],
-                     [442.89, 0., 0.],
-                     [454.21, 0., 0.],
-                     [162.77, 0., 0.],
-                     [75., 0., 0.],
-                     [132.95, 0., 0.],
-                     [442.89, 0., 0.],
-                     [454.21, 0., 0.],
-                     [162.77, 0., 0.],
-                     [75., 0., 0.],
-                     [0., 0., 0.],
-                     [233.38, 0., 0.],
-                     [257.08, 0., 0.],
-                     [121.13, 0., 0.],
-                     [115., 0., 0.],
-                     [257.08, 0., 0.],
-                     [151.03, 0., 0.],
-                     [278.88, 0., 0.],
-                     [251.73, 0., 0.],
-                     [0., 0., 0.],
-                     [100., 0., 0.],
-                     [137.5, 0., 0.],
-                     [0., 0., 0.],
-                     [257.08, 0., 0.],
-                     [151.03, 0., 0.],
-                     [278.88, 0., 0.],
-                     [251.73, 0., 0.],
-                     [0., 0., 0.],
-                     [100., 0., 0.],
-                     [137.5, 0., 0.],
-                     [0., 0., 0.]])
-    config.bone = bone
-
     train_set = {}
     complete_train = []
     for subj in [1, 6, 7, 8, 9, 11]:
@@ -123,7 +88,6 @@ def read_human(config, training):
         train_set = data_utils.normalize_data(train_set, data_mean, data_std, dim_to_use)
         test_set = data_utils.normalize_data(test_set, data_mean, data_std, dim_to_use)
 
-
         expmapInd = np.split(np.arange(4, 100) - 1, 32)
 
         weights = np.zeros([len(config.dim_to_use)])
@@ -132,7 +96,6 @@ def read_human(config, training):
                 if config.dim_to_use[j] in expmapInd[i]:
                     weights[j] = i + 1
                     break
-        weights
         weights = list(map(int, weights))
 
         chain = [[0], [132.95, 442.89, 454.21, 162.77, 75], [132.95, 442.89, 454.21, 162.77, 75],
